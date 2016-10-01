@@ -16,20 +16,13 @@ public class BrainScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         angleOfRotation = 0.5f;
-        maximumRotationAngle = 25f;
+        maximumRotationAngle = 20f;
         Ball.transform.position = StartZone.transform.position;
-
-        float an = Quaternion.Angle(Quaternion.Euler(new Vector3(0, 0, 0)), Quaternion.Euler(new Vector3(0, 30, 30)));
-
-        Debug.Log(an);
 	}
 	
 	// Update is called once per frame
 	void Update () {
         readInput();
-
-        // Debug.Log(RotationObject.transform.eulerAngles.x); foward backwwards
-        Debug.Log(RotationObject.transform.eulerAngles.z);
     }
 
     public void reset(){
@@ -42,56 +35,77 @@ public class BrainScript : MonoBehaviour {
 
     void readInput()
     {
-        float fowardAngle = RotationObject.transform.eulerAngles.x;
-        float sideAngle = RotationObject.transform.eulerAngles.z;
+        float fowardAngle = Mathf.DeltaAngle(RotationObject.transform.eulerAngles.x,0);
+        float sideAngle = Mathf.DeltaAngle(RotationObject.transform.eulerAngles.z,0);
 
-        if (Input.GetKey(KeyCode.UpArrow) && checkFowardAngle())
+        
+        if (Input.GetKey(KeyCode.UpArrow) && checkFowardAngle(fowardAngle))
             {
-                Debug.Log("Up arrow pressed");
+                //Debug.Log("Up arrow pressed");
                 RotationObject.transform.Rotate(-Vector3.left, angleOfRotation, Space.World);
             }
   
-            if(Input.GetKey(KeyCode.DownArrow) && checkFowardAngle())
+            if(Input.GetKey(KeyCode.DownArrow) && checkBackAngle(fowardAngle))
             {
-                Debug.Log("Up down pressed");
+                //Debug.Log("Up down pressed");
                 RotationObject.transform.Rotate(Vector3.left, angleOfRotation, Space.World);
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow) && checkSideAngle())
+            if (Input.GetKey(KeyCode.LeftArrow) && checkLeftAngle(sideAngle))
             {
-                Debug.Log("Up left pressed");
+                //Debug.Log("Up left pressed");
                 RotationObject.transform.Rotate(Vector3.forward, angleOfRotation, Space.Self);
             }
 
-            if (Input.GetKey(KeyCode.RightArrow) && checkSideAngle())
+            if (Input.GetKey(KeyCode.RightArrow) && checkRightAngle(sideAngle))
             {
-                Debug.Log("Up right pressed");
+                //Debug.Log("Up right pressed");
                 RotationObject.transform.Rotate(-Vector3.forward, angleOfRotation, Space.Self);
             }
 
             
     }
 
-    private bool checkSideAngle()
+    private bool checkBackAngle(float fowardAngle)
     {
-        throw new NotImplementedException();
+        if(fowardAngle > maximumRotationAngle)
+            return false;
+
+        return true;
     }
 
-    private bool checkFowardAngle()
+    private bool checkLeftAngle(float sideAngle)
     {
-        throw new NotImplementedException();
+
+        
+        if (sideAngle < -maximumRotationAngle)
+            return false;
+        return true;    
     }
 
-    bool checkTiltAngle()
+    private bool checkRightAngle(float sideAngle)
     {
-        if(Quaternion.Angle(Quaternion.identity, RotationObject.transform.rotation) > 45)
-        {
-            //Quaternion.x
-           // Debug.Log("Got over the limit");
+        if (sideAngle > maximumRotationAngle)
+            return false;
+        return true;
+    }
+
+    private bool checkFowardAngle(float fowardAngle)
+    {
+        if (fowardAngle < -maximumRotationAngle)
+            return false;
+
+        return true;
+    }
+
+    private bool checkAllAngle(float angle)
+    {
+        double squareAngle = Math.Pow(Math.Floor(angle), 2);
+
+        if (squareAngle <= 256)
             return true;
-        }
 
         return false;
-        
     }
+    
 }
